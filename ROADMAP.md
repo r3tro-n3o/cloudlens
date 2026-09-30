@@ -166,6 +166,19 @@ v1.0 actually ships and there's still appetite left.
 - **React dashboard** — interactive graph, click-a-node detail view
 - **Live AWS demo mode** — spin up a minimal real lab for a one-time demo
   video, tear down same day
+- **Live AWS collector** — a boto3-based input method that queries
+  actual deployed IAM roles, policies, and resources and auto-generates
+  CloudLens's environment JSON, instead of relying on hand-written JSON
+  or static Terraform parsing. Built and tested against LocalStack
+  first, since the boto3 calls are identical whether they hit LocalStack
+  or a real account, then pointed at real read-only credentials once
+  proven. This is not the same thing as "live AWS demo mode" above —
+  that's a one-off video, this is a third reusable input method sitting
+  alongside the JSON and Terraform loaders. It's also a meaningful
+  upgrade over Terraform parsing alone, since Terraform only reflects
+  what's declared in code, not what's actually deployed — config drift,
+  console-created roles, and manual changes are invisible to a Terraform
+  parser but visible to a live collector
 - **Synthetic CloudTrail generator + detection/investigation engine** — the
   attack-simulation-and-telemetry idea from the original AWS lab concept,
   rebuilt local-first: simulator emits fake CloudTrail-shaped JSON events,
