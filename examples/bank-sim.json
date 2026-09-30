@@ -1,0 +1,53 @@
+{
+  "identities": [
+    {"id": "teller", "type": "user"},
+    {"id": "contractor", "type": "user"},
+    {"id": "junior-dev", "type": "user"}
+  ],
+
+  "roles": [
+    {
+      "id": "TellerRole",
+      "trusts": ["teller"],
+      "permissions": [
+        {"action": "s3:GetObject", "resource": "transaction-logs"}
+      ]
+    },
+    {
+      "id": "ContractorRole",
+      "trusts": ["contractor"],
+      "permissions": [
+        {"action": "s3:GetObject", "resource": "public-reports"},
+        {"action": "iam:PassRole", "resource": "OpsRole"}
+      ]
+    },
+    {
+      "id": "OpsRole",
+      "trusts": ["EC2Instance"],
+      "permissions": [
+        {"action": "s3:*", "resource": "customer-pii"},
+        {"action": "iam:PassRole", "resource": "AdminRole"}
+      ]
+    },
+    {
+      "id": "AdminRole",
+      "trusts": ["LambdaFunc", "junior-dev"],
+      "permissions": [
+        {"action": "s3:*", "resource": "core-banking-db"},
+        {"action": "iam:*", "resource": "*"}
+      ]
+    }
+  ],
+
+  "resources": [
+    {"id": "transaction-logs", "type": "s3_bucket", "sensitivity": "low"},
+    {"id": "public-reports", "type": "s3_bucket", "sensitivity": "low"},
+    {"id": "customer-pii", "type": "s3_bucket", "sensitivity": "high"},
+    {"id": "core-banking-db", "type": "s3_bucket", "sensitivity": "high"}
+  ],
+
+  "compute": [
+    {"id": "EC2Instance", "assumed_role": "OpsRole"},
+    {"id": "LambdaFunc", "assumed_role": "AdminRole"}
+  ]
+}

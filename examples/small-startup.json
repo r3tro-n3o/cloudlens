@@ -1,0 +1,59 @@
+{
+  "identities": [
+    {
+      "id": "developer",
+      "type": "user"
+    }
+  ],
+
+  "roles": [
+    {
+      "id": "DevRole",
+      "trusts": ["developer"],
+      "permissions": [
+        {
+          "action": "s3:GetObject",
+          "resource": "dev-bucket"
+        },
+        {
+          "action": "iam:PassRole",
+          "resource": "AdminRole"
+        }
+      ]
+    },
+    {
+      "id": "AdminRole",
+      "trusts": ["Lambda"],
+      "permissions": [
+        {
+          "action": "s3:*",
+          "resource": "*"
+        },
+        {
+          "action": "iam:*",
+          "resource": "*"
+        }
+      ]
+    }
+  ],
+
+  "resources": [
+    {
+      "id": "dev-bucket",
+      "type": "s3_bucket",
+      "sensitivity": "low"
+    },
+    {
+      "id": "company-data",
+      "type": "s3_bucket",
+      "sensitivity": "high"
+    }
+  ],
+
+  "compute": [
+    {
+      "id": "Lambda",
+      "assumed_role": "AdminRole"
+    }
+  ]
+}
